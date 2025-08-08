@@ -3,7 +3,7 @@ import './style.scss'
 import {
   createBrowserRouter,
   RouterProvider,
-} from "react-router";
+} from "react-router-dom";
 import {Login,Write,Register,SinglePost,Home} from './pages/index.js'
 import Layout from './Layout.jsx'
 
