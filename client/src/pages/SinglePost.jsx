@@ -1,34 +1,68 @@
-import React from 'react'
-import logo from '../img/logo.png'
+import React,{useState,useEffect, useContext} from 'react'
+import user from '../img/user.jpeg'
 import edit from '../img/edit.png'
 import del from '../img/delete.jpeg'
-import {Link} from 'react-router-dom'
+import {Link,useLocation, useNavigate} from 'react-router-dom'
 import Menu from '../components/Menu'
+import axios from 'axios'
+import moment from 'moment'
+import { AuthContext } from '../context/authContext'
 
 function SinglePost() {
+  const [post,setpost] = useState({});
+
+
+  const location = useLocation()
+  const postId = location.pathname.split('/')[2];
+
+  const {currentUser} = useContext(AuthContext)
+  const navigate = useNavigate();
+
+  useEffect(()=>{
+    const fetchData = async()=>{
+      try {
+      const res = await axios.get(`/api/posts/${postId}`)
+      setpost(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+    fetchData();
+  },[postId])
+
+
+  const handleDelete= async()=>{
+    try {
+      await axios.delete(`/api/posts/${postId}`)
+      navigate('/')
+      
+    } catch (error) {
+      console.log(error);
+    }
+  }
   return (
     <div className="single">
       <div className="content">
-        <img src={logo} alt="" />
+        <img src={post?.img} alt="" />
         <div className="user">
-          <img src={logo} alt="USERIMAGE" />
+          <img src={user} alt="USERIMAGE" />
           <div className="info">
-            <span>Madhu</span>
-            <p>posted 2 days ago</p>
+            <span>{post.username}</span>
+            <p>Posted {moment(post.date).fromNow()}</p>
           </div>
-          <div className="edit">
+          { currentUser.username === post.username &&
+            <div className="edit">
             <Link to={`/write?edit=2`}>
             <img src={edit} alt="" />
             </Link>
-            <img src={del} alt="" />
+            <img onClick={handleDelete} src={del} alt="" />
           </div>
+          }
         </div>
-        <h1>Lorem ipsum dolor, sit amet consectetur adipisicing elit. In, eum!</h1>
-        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Suscipit, tempore eligendi praesentium exercitationem aspernatur voluptatem temporibus, nostrum quae odit quam, repudiandae ut qui perspiciatis nemo minima non nulla doloremque omnis laboriosam corrupti. Reprehenderit quia, non asperiores nihil, consectetur assumenda aliquid sunt delectus sit, laudantium consequatur. Eligendi, odio? Voluptatem quis nobis voluptate. Doloremque itaque harum ipsa ipsum, placeat aliquid veritatis ratione quam corrupti blanditiis repudiandae molestias dolores beatae numquam sapiente pariatur natus, nisi similique quibusdam dignissimos. Inventore pariatur nobis accusantium perferendis quidem, dolor esse? Inventore deserunt voluptatum molestias minus quasi, culpa debitis at! Tempora fugit, neque quibusdam similique eum ipsum tenetur!<br></br><br></br>
-        Lorem ipsum dolor, sit amet consectetur adipisicing elit. Minima dolorem voluptatem aperiam consectetur voluptates, obcaecati, fugit pariatur nulla provident consequatur quam? Qui, dicta reprehenderit? Eum aut fuga quisquam excepturi quis delectus corrupti dolore tenetur. Fuga voluptate velit voluptates, qui temporibus expedita impedit saepe delectus facere amet rem aperiam tenetur mollitia.
-        </p>
+        <h1>{post.title}</h1>
+          {post.desc}
       </div>
-      <Menu />
+      <Menu cat={post.cat} />
     </div>
   )
 }

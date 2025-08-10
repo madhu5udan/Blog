@@ -1,34 +1,35 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { Link } from 'react-router-dom';
 
-function Menu() {
+function Menu({ cat }) {
+  const [posts, setposts] = useState([]);
 
-    const posts = [
-    {
-      id:1,
-      title: "Lorem ipsum dolor sit amet consectetur adipisicing elit.",
-      desc: "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Ab, deserunt. Cupiditate, quam! Natus rerum iste reprehenderit officiis minima sed ipsam!",
-      img:"https://static.vecteezy.com/system/resources/thumbnails/049/855/296/small_2x/nature-background-high-resolution-wallpaper-for-a-serene-and-stunning-view-photo.jpg "
-    },
-    {
-      id:2,
-      title: "Lorem ipsum dolor sit amet consectetur adipisicing elit.",
-      desc: "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Ab, deserunt. Cupiditate, quam! Natus rerum iste reprehenderit officiis minima sed ipsam!",
-      img:" https://static.vecteezy.com/system/resources/thumbnails/049/855/296/small_2x/nature-background-high-resolution-wallpaper-for-a-serene-and-stunning-view-photo.jpg"
-    }
-  ]
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await axios.get(`/api/posts?cat=${cat}`);
+        setposts(res.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchData();
+  }, [cat]);
 
   return (
-    <div className='menu'>
-        <h1>Some other post you like</h1>
-        {posts.map((post)=>(
-            <div className="post" key={post.id}>
-                <img src={post.img} alt="" />
-                <h2>{post.title}</h2>
-                <button>Read More</button>
-            </div>
-        ))}
+    <div className="menu">
+      <h1>Some other posts you may like</h1>
+      {posts.map((post) => (
+        <div className="post" key={post.id}>
+          <img src={post.img} alt="" />
+          <h2>{post.title}</h2>
+          <Link className='link' to={`/post/${post.id}`} ><button>Read More</button></Link>
+          
+        </div>
+      ))}
     </div>
-  )
+  );
 }
 
-export default Menu
+export default Menu;
