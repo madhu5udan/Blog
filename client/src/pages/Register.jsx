@@ -1,6 +1,6 @@
 import React from 'react'
 import { useState } from 'react'
-import {Link} from 'react-router-dom'
+import {Link, useNavigate} from 'react-router-dom'
 import axios from 'axios';
 
 function Register() {
@@ -10,6 +10,10 @@ function Register() {
     password:'',
   })
 
+  const [err,seterr] = useState(null);
+
+  const navigate = useNavigate();
+
   const handleChange = (e)=>{
       setinputs(prev=>({...prev,[e.target.name]:e.target.value}))
   }
@@ -17,10 +21,10 @@ function Register() {
   const handleSubmit = async(e)=>{
     e.preventDefault();
     try {
-       const res = await axios.post('/api/auth/register',inputs);
-       console.log(res);
+      await axios.post('/api/auth/register',inputs);
+       navigate('/login')
     } catch (error) {
-      console.log(error)
+      seterr(error.response.data);
     }
    
   }
@@ -32,11 +36,11 @@ function Register() {
         <input type="email" placeholder='email' name='email' required onChange={handleChange}/>
         <input type="password" placeholder='password' name='password' required onChange={handleChange}/>
         <button onClick={handleSubmit}>Login</button>
-        <p>There is a error!</p>
+        {err && <p>{err}</p>}
         <span>Have an account <Link to='/login'>Login</Link></span>
       </form>
     </div>
-  )
+  ) 
 }
 
 export default Register
