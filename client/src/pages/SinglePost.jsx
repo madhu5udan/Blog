@@ -18,6 +18,11 @@ function SinglePost() {
   const {currentUser} = useContext(AuthContext)
   const navigate = useNavigate();
 
+  const getText = (html) =>{
+    const doc = new DOMParser().parseFromString(html,"text/html")
+    return doc.body.textContent
+  }
+
   useEffect(()=>{
     const fetchData = async()=>{
       try {
@@ -43,7 +48,7 @@ function SinglePost() {
   return (
     <div className="single">
       <div className="content">
-        <img src={post?.img} alt="" />
+        <img src={`../public/uploads/${post?.img}`} alt="" />
         <div className="user">
           <img src={user} alt="USERIMAGE" />
           <div className="info">
@@ -52,7 +57,7 @@ function SinglePost() {
           </div>
           { currentUser.username === post.username &&
             <div className="edit">
-            <Link to={`/write?edit=2`}>
+            <Link to={`/write?edit=2`} state={post}>
             <img src={edit} alt="" />
             </Link>
             <img onClick={handleDelete} src={del} alt="" />
@@ -60,7 +65,7 @@ function SinglePost() {
           }
         </div>
         <h1>{post.title}</h1>
-          {post.desc}
+          {getText(post.desc)}
       </div>
       <Menu cat={post.cat} />
     </div>
